@@ -26,7 +26,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
     public class TransformFeatureVectorDebugParentVisual : MonoBehaviour
     {
         [SerializeField]
-        private TransformRecognizerActiveState _transformRecognizerActiveState;
+        public TransformRecognizerActiveState _transformRecognizerActiveState;
         [SerializeField]
         private GameObject _vectorVisualPrefab;
 

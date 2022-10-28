@@ -20,6 +20,7 @@
 
 using Oculus.Interaction.Input;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -32,31 +33,31 @@ namespace Oculus.Interaction.PoseDetection.Debug
         private Hand _hand;
 
         [SerializeField]
-        private TransformRecognizerActiveState[] _transformRecognizerActiveStates;
+        public List<TransformRecognizerActiveState> _transformRecognizerActiveStates = new List<TransformRecognizerActiveState>();
 
         [SerializeField]
-        private Renderer _target;
+        protected Renderer _target;
 
         [SerializeField]
-        private Color _normalColor = Color.red;
+        protected Color _normalColor = Color.red;
 
         [SerializeField]
-        private Color _activeColor = Color.green;
+        protected Color _activeColor = Color.green;
 
         [SerializeField]
-        private GameObject _transformFeatureDebugVisualPrefab;
+        protected GameObject _transformFeatureDebugVisualPrefab;
 
         [SerializeField]
-        private Transform _debugVisualParent;
+        protected Transform _debugVisualParent;
 
         [SerializeField]
-        private Vector3 _featureSpacingVec = new Vector3(1.0f, 0.0f, 0.0f);
+        protected Vector3 _featureSpacingVec = new Vector3(1.0f, 0.0f, 0.0f);
 
         [SerializeField]
-        private Vector3 _featureDebugLocalScale = new Vector3(0.3f, 0.3f, 0.3f);
+        protected Vector3 _featureDebugLocalScale = new Vector3(0.3f, 0.3f, 0.3f);
 
         [SerializeField]
-        private TextMeshPro _targetText;
+        protected TextMeshPro _targetText;
 
         private Material _material;
         private bool _lastActiveValue = false;
@@ -64,8 +65,8 @@ namespace Oculus.Interaction.PoseDetection.Debug
         protected virtual void Awake()
         {
             Assert.IsNotNull(_hand);
-            Assert.IsTrue(_transformRecognizerActiveStates != null &&
-                _transformRecognizerActiveStates.Length > 0);
+            //Assert.IsTrue(_transformRecognizerActiveStates != null &&
+               // _transformRecognizerActiveStates.Length > 0);
             Assert.IsNotNull(_target);
             Assert.IsNotNull(_transformFeatureDebugVisualPrefab);
             Assert.IsNotNull(_targetText);
@@ -118,7 +119,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
             Destroy(_material);
         }
 
-        private bool AllActive()
+        protected bool AllActive()
         {
             foreach (var activeState in _transformRecognizerActiveStates)
             {

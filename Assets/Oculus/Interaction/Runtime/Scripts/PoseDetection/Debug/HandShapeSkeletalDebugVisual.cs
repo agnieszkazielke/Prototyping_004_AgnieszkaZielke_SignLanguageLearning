@@ -30,7 +30,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
     public class HandShapeSkeletalDebugVisual : MonoBehaviour
     {
         [SerializeField]
-        private ShapeRecognizerActiveState _shapeRecognizerActiveState;
+        public ShapeRecognizerActiveState _shapeRecognizerActiveState;
 
         [SerializeField]
         private GameObject _fingerFeatureDebugVisualPrefab;
@@ -41,7 +41,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
             Assert.IsNotNull(_fingerFeatureDebugVisualPrefab);
         }
 
-        protected virtual void Start()
+        protected virtual void OnEnable()
         {
             var statesByFinger = AllFeatureStates()
                 .GroupBy(s => s.Item1)
