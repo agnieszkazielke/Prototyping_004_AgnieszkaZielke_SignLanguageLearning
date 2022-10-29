@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
         _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
     }
 
+    // maybe move to be in DelaySelectNext Sign???
     private void ResetSkeletonDebug()
     {
         //_shapeHandDebug.enabled = false;
