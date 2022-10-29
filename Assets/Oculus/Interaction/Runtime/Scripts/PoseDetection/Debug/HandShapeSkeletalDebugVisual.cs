@@ -33,7 +33,9 @@ namespace Oculus.Interaction.PoseDetection.Debug
         public ShapeRecognizerActiveState _shapeRecognizerActiveState;
 
         [SerializeField]
-        private GameObject _fingerFeatureDebugVisualPrefab;
+        public GameObject _fingerFeatureDebugVisualPrefab;
+        [SerializeField] 
+        public Logger _debugLogger;
 
         protected virtual void Awake()
         {
@@ -43,6 +45,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
 
         protected virtual void OnEnable()
         {
+            UnityEngine.Debug.Log("ON ENABLE EXECUTED");
             var statesByFinger = AllFeatureStates()
                 .GroupBy(s => s.Item1)
                 .Select(group => new
