@@ -107,6 +107,7 @@ namespace Oculus.Interaction.Samples
                 _currentChildIndex--;
             }
             _scrollVal = Time.time;
+            UpdateSignText();
         }
 
         private RectTransform GetCurrentChild()

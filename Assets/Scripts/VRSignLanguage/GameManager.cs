@@ -5,6 +5,7 @@ using Oculus.Interaction;
 using Oculus.Interaction.PoseDetection;
 using Oculus.Interaction.PoseDetection.Debug;
 using Oculus.Interaction.Samples;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _handShapeVisualiser;
     [SerializeField] private Logger _debugLogger;
     [SerializeField] private CarouselView _displayView;
+    [SerializeField] private TMP_Text _messageText;
     private int _signIndex = -1;
     private GameObject _currentSign;
     
@@ -23,15 +25,34 @@ public class GameManager : MonoBehaviour
         
         SelectNextSign();
         ResetSkeletonDebug();
-        //_displayView.UpdateSignText(); 
+        UpdateMessageText(" ");
+        
     }
 
 
     private void DelaySelectNextSign()
     {
+        UpdateMessageText("You got it!");
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
         ResetSkeletonDebug();
         Invoke(nameof(SelectNextSign), 1.5f);
+    }
+    
+    public void UISelectNextSign()
+    {
+        UpdateMessageText(" ");
+        _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
+        ResetSkeletonDebug();
+        Invoke(nameof(SelectNextSign), 0.5f);
+    }
+
+    
+    public void UISelectPreviousSign()
+    {
+        UpdateMessageText(" ");
+        _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
+        ResetSkeletonDebug();
+        Invoke(nameof(SelectPreviousSign), 0.5f);
     }
     
     private void SelectNextSign()
@@ -46,10 +67,26 @@ public class GameManager : MonoBehaviour
         _currentSign = _signPosesRightHand[_signIndex];
         _displayView.ScrollRight();
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
+        UpdateMessageText("Try this one!");
         _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
     }
 
-    // maybe move to be in DelaySelectNext Sign???
+    private void SelectPreviousSign()
+    {
+        _signIndex--;
+        if (_signIndex < 0)
+        {
+            _signIndex = _signPosesRightHand.Count - 1;
+            //_displayView.ScrollLeft();
+        }
+
+        _currentSign = _signPosesRightHand[_signIndex];
+        _displayView.ScrollLeft();
+        _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
+        UpdateMessageText("Try this one!");
+        _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
+    }
+
     private void ResetSkeletonDebug()
     {
         _shapeHandDebug.RestartActiveState();
@@ -58,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     }
     
-    // Find the reason for one behid on the skeleton
+    
     private void ConfigureSkeletonDebug()
     {
         
@@ -69,6 +106,11 @@ public class GameManager : MonoBehaviour
         _transformHandDebug.ImportActiveState();
         _debugLogger.LogInfo("Skeleton reconfigured");
   
+    }
+
+    private void UpdateMessageText(string text)
+    {
+        _messageText.text = text;
     }
 
 
