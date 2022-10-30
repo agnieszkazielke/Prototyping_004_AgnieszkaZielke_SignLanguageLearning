@@ -22,6 +22,7 @@ using Oculus.Interaction.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -34,8 +35,10 @@ namespace Oculus.Interaction.PoseDetection.Debug
 
         [SerializeField]
         public GameObject _fingerFeatureDebugVisualPrefab;
-        [SerializeField] 
-        public Logger _debugLogger;
+
+        private GameObject _boneDebugObject;
+        private FingerFeatureSkeletalDebugVisual _skeletalComp;
+     
 
         protected virtual void Awake()
         {
@@ -43,9 +46,15 @@ namespace Oculus.Interaction.PoseDetection.Debug
             Assert.IsNotNull(_fingerFeatureDebugVisualPrefab);
         }
 
-        protected virtual void OnEnable()
+        protected virtual void Start()
         {
-            UnityEngine.Debug.Log("ON ENABLE EXECUTED");
+            ImportActiveState();
+        }
+        
+        // Added - moved from start
+
+        public void ImportActiveState()
+        {
             var statesByFinger = AllFeatureStates()
                 .GroupBy(s => s.Item1)
                 .Select(group => new
@@ -57,12 +66,14 @@ namespace Oculus.Interaction.PoseDetection.Debug
             {
                 foreach (var feature in g.FingerFeatures)
                 {
-                    var boneDebugObject = Instantiate(_fingerFeatureDebugVisualPrefab);
-                    var skeletalComp = boneDebugObject.GetComponent<FingerFeatureSkeletalDebugVisual>();
+                    // WERE HACK HERE
+                    _boneDebugObject = Instantiate(_fingerFeatureDebugVisualPrefab);
+                    _skeletalComp = _boneDebugObject.GetComponent<FingerFeatureSkeletalDebugVisual>();
 
-                    skeletalComp.Initialize(_shapeRecognizerActiveState.Hand, g.HandFinger, feature);
+                    _skeletalComp.Initialize(_shapeRecognizerActiveState.Hand, g.HandFinger, feature);
+                    
 
-                    var debugVisTransform = boneDebugObject.transform;
+                    var debugVisTransform = _boneDebugObject.transform;
 
                     debugVisTransform.parent = this.transform;
 
@@ -72,6 +83,16 @@ namespace Oculus.Interaction.PoseDetection.Debug
                 }
             }
         }
+    
+        // Added
+        public void RestartActiveState()
+        {
+            Destroy(_boneDebugObject);
+            _skeletalComp = null;
+
+        }
+        
+        
 
         private IEnumerable<ValueTuple<HandFinger, IReadOnlyList<ShapeRecognizer.FingerFeatureConfig>>> AllFeatureStates()
         {

@@ -20,13 +20,17 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
+        
         SelectNextSign();
+        ResetSkeletonDebug();
+        //_displayView.UpdateSignText(); 
     }
 
 
     private void DelaySelectNextSign()
     {
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
+        ResetSkeletonDebug();
         Invoke(nameof(SelectNextSign), 1.5f);
     }
     
@@ -41,7 +45,6 @@ public class GameManager : MonoBehaviour
 
         _currentSign = _signPosesRightHand[_signIndex];
         _displayView.ScrollRight();
-        ResetSkeletonDebug();
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
         _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
     }
@@ -49,20 +52,22 @@ public class GameManager : MonoBehaviour
     // maybe move to be in DelaySelectNext Sign???
     private void ResetSkeletonDebug()
     {
-        //_shapeHandDebug.enabled = false;
+        _shapeHandDebug.RestartActiveState();
         _handShapeVisualiser.gameObject.SetActive(false);
-        _transformHandDebug.enabled = false;
-        Invoke(nameof(ConfigureSkeletonDebug), 1.5f);
+        Invoke(nameof(ConfigureSkeletonDebug), 2.5f);
 
     }
     
+    // Find the reason for one behid on the skeleton
     private void ConfigureSkeletonDebug()
     {
-        //_shapeHandDebug.enabled = true;
+        
         _handShapeVisualiser.gameObject.SetActive(true);
-        _transformHandDebug.enabled = true;
-        _shapeHandDebug._shapeRecognizerActiveState = _currentSign.GetComponent<ShapeRecognizerActiveState>();
+        _shapeHandDebug._shapeRecognizerActiveState = _currentSign.GetComponent<ShapeRecognizerActiveState>(); 
         _transformHandDebug._transformRecognizerActiveState = _currentSign.GetComponent<TransformRecognizerActiveState>();
+        _shapeHandDebug.ImportActiveState();
+        _transformHandDebug.ImportActiveState();
+        _debugLogger.LogInfo("Skeleton reconfigured");
   
     }
 

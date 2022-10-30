@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -35,9 +36,12 @@ namespace Oculus.Interaction.Samples
         [SerializeField]
         private AnimationCurve _easeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+        [SerializeField] private TMP_Text _signNameText;
+
         [SerializeField, Optional]
         private GameObject _emptyCarouselVisuals;
-
+        
+        
         public int CurrentChildIndex => _currentChildIndex;
 
         public RectTransform ContentArea => _content;
@@ -51,24 +55,38 @@ namespace Oculus.Interaction.Samples
             Assert.IsNotNull(_content);
         }
 
+        public void UpdateSignText()
+        {
+            RectTransform currentChild = GetCurrentChild();
+            Texture texture = currentChild.gameObject.GetComponentInChildren<RawImage>().texture;
+            _signNameText.text = texture.name;
+        }
+
         public void ScrollRight()
         {
+            
+            
             if (_content.childCount <= 1)
             {
                 return;
             }
+            
+            
+            
             else if (_currentChildIndex > 0)
             {
                 RectTransform currentChild = GetCurrentChild();
                 _content.GetChild(0).SetAsLastSibling();
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
                 ScrollToChild(currentChild, 1);
+                
             }
             else
             {
                 _currentChildIndex++;
             }
             _scrollVal = Time.time;
+            UpdateSignText();
         }
 
         public void ScrollLeft()

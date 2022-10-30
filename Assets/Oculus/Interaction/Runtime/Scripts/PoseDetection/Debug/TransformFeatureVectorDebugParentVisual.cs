@@ -45,6 +45,13 @@ namespace Oculus.Interaction.PoseDetection.Debug
 
         protected virtual void Start()
         {
+            ImportActiveState();
+        }
+        
+        // Added moved from start
+
+        public void ImportActiveState()
+        {
             var featureConfigs = _transformRecognizerActiveState.FeatureConfigs;
             foreach (var featureConfig in featureConfigs)
             {
@@ -53,6 +60,7 @@ namespace Oculus.Interaction.PoseDetection.Debug
                 CreateVectorDebugView(feature, true);
             }
         }
+        
 
         private void CreateVectorDebugView(TransformFeature feature, bool trackingHandVector)
         {
