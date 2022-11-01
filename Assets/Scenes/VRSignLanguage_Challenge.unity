@@ -627,6 +627,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b0abc06a013254c92ed631fd56e804, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameMode: 1
   _signPosesRightHand:
   - {fileID: 5868880526540089348}
   - {fileID: 8835855799499981598}

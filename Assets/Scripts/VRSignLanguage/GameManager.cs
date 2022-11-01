@@ -7,9 +7,17 @@ using Oculus.Interaction.PoseDetection.Debug;
 using Oculus.Interaction.Samples;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public enum GameMode
+    {
+        Learning = 0,
+        Challenge = 1
+    }
+
+    public GameMode gameMode;
     [SerializeField] private List<GameObject> _signPosesRightHand = new List<GameObject>();
     [SerializeField] private HandShapeSkeletalDebugVisual _shapeHandDebug;
     [SerializeField] private TransformFeatureVectorDebugParentVisual _transformHandDebug;
@@ -22,11 +30,30 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
+        if (gameMode == GameMode.Learning)
+        {
+            SelectNextSign();
+            ResetSkeletonDebug();
+            UpdateMessageText(" ");
+        }
         
-        SelectNextSign();
-        ResetSkeletonDebug();
-        UpdateMessageText(" ");
         
+    }
+    
+    public void RestartScene()
+    {
+        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ChangeScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
 
