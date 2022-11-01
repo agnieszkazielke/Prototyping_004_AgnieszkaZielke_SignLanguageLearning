@@ -18,15 +18,27 @@ public class GameManager : MonoBehaviour
     }
 
     public GameMode gameMode;
+    
+    [Header("General")]
     [SerializeField] private List<GameObject> _signPosesRightHand = new List<GameObject>();
     [SerializeField] private HandShapeSkeletalDebugVisual _shapeHandDebug;
     [SerializeField] private TransformFeatureVectorDebugParentVisual _transformHandDebug;
     [SerializeField] private GameObject _handShapeVisualiser;
-    [SerializeField] private Logger _debugLogger;
-    [SerializeField] private CarouselView _displayView;
-    [SerializeField] private TMP_Text _messageText;
+    [SerializeField, Optional] private Logger _debugLogger;
+    [SerializeField, Optional] private TMP_Text _messageText;
+    
+    [Header("Learning")]
+    [SerializeField, Optional] private CarouselView _displayView;
     private int _signIndex = -1;
     private GameObject _currentSign;
+
+
+    [Header("Challenge")] 
+    [SerializeField, Optional] private List<GameObject> _challengeWords = new List<GameObject>();
+    [SerializeField, Optional] private ChallengeSpellingWord _challengeWord;
+    [SerializeField, Optional] private TMP_Text _challengeSignText;
+    private int _wordIndex = -1;
+    
     
     void Start()
     {
@@ -35,6 +47,13 @@ public class GameManager : MonoBehaviour
             SelectNextSign();
             ResetSkeletonDebug();
             UpdateMessageText(" ");
+        }
+        
+        else if (gameMode == GameMode.Challenge)
+        {
+            SelectNextChallengeWord();
+            ResetSkeletonDebug();
+            UpdateMessageText("Spell this word!");
         }
         
         
@@ -63,6 +82,7 @@ public class GameManager : MonoBehaviour
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
         ResetSkeletonDebug();
         Invoke(nameof(SelectNextSign), 1.5f);
+ 
     }
     
     public void UISelectNextSign()
@@ -76,26 +96,66 @@ public class GameManager : MonoBehaviour
     
     public void UISelectPreviousSign()
     {
-        UpdateMessageText(" ");
+        UpdateMessageText("Spell this word!");
         _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.RemoveAllListeners();
         ResetSkeletonDebug();
         Invoke(nameof(SelectPreviousSign), 0.5f);
+    }
+
+    private void SelectNextChallengeWord()
+    {
+        _wordIndex++;
+        if (_wordIndex >= _challengeWords.Count)
+        {
+            _wordIndex = 0;
+        }
+        _challengeWord = _challengeWords[_wordIndex].GetComponent<ChallengeSpellingWord>();
+        SelectNextSign();
     }
     
     private void SelectNextSign()
     {
         _signIndex++;
-        if (_signIndex >= _signPosesRightHand.Count)
+
+        if (gameMode == GameMode.Learning)
         {
-            _signIndex = 0;
+            if (_signIndex >= _signPosesRightHand.Count)
+            {
+                _signIndex = 0;
+                _displayView.ScrollRight();
+            }
+
+            _currentSign = _signPosesRightHand[_signIndex];
             _displayView.ScrollRight();
+            _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
+            UpdateMessageText("Try this one!");
+            _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
         }
 
-        _currentSign = _signPosesRightHand[_signIndex];
-        _displayView.ScrollRight();
-        _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
-        UpdateMessageText("Try this one!");
-        _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
+        else if (gameMode == GameMode.Challenge)
+        {
+            if (_signIndex >= _challengeWord._signPosesSequence.Count)
+            {
+                _signIndex = -1;
+                UpdateMessageText("You cracked the word!");
+                Invoke(nameof(SelectNextChallengeWord), 1.5f);
+                
+                return;
+                
+            }
+            _currentSign = _challengeWord._signPosesSequence[_signIndex];
+            _currentSign.GetComponent<SelectorUnityEventWrapper>().WhenSelected.AddListener(DelaySelectNextSign);
+            
+            string name = _challengeWord.gameObject.name;
+            char letter = name[_signIndex];
+
+            _challengeSignText.text = name;
+            UpdateMessageText(letter.ToString());
+            _debugLogger.LogInfo("Current sign: " + _currentSign.gameObject.name);
+            
+        }
+        
+        
     }
 
     private void SelectPreviousSign()
